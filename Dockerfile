@@ -1,10 +1,13 @@
-# 1️⃣ Use official OpenJDK image
+# 1️⃣ Build stage - use full JDK for compiling
 FROM eclipse-temurin:22-jdk AS build
-
-# 2️⃣ Set working directory
 WORKDIR /app
 
-# 3️⃣ Copy everything and build
+# 2️⃣ Copy Gradle wrapper and grant permission first (for caching + fix)
+COPY gradlew .
+COPY gradle gradle
+RUN chmod +x gradlew
+
+# 3️⃣ Copy the rest of the project and build
 COPY . .
 RUN ./gradlew bootJar --no-daemon
 
@@ -12,11 +15,11 @@ RUN ./gradlew bootJar --no-daemon
 FROM eclipse-temurin:22-jre
 WORKDIR /app
 
-# Copy JAR from build stage
+# Copy only the built JAR
 COPY --from=build /app/build/libs/*.jar app.jar
 
-# Expose port (match your Spring Boot server.port)
+# 5️⃣ Expose Spring Boot default port
 EXPOSE 8080
 
-# Start the app
+# 6️⃣ Run the app
 ENTRYPOINT ["java", "-jar", "app.jar"]
