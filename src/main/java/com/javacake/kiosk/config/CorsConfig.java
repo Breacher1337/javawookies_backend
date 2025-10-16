@@ -16,6 +16,7 @@ public class CorsConfig {
                 registry.addMapping("/**")
                         .allowedOrigins(
                                 "https://javawookies-kiosk.netlify.app",
+                                "https://javawookies-admin.netlify.app",
                                 "http://localhost:5173",
                                 "http://localhost:3000"
                         )
